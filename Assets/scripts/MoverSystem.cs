@@ -9,14 +9,13 @@ public class MoverSystem : ComponentSystem
 {
     protected override void OnUpdate()
     {
-        Entities.ForEach ((ref Translation translation, ref BoidComponent boid) => {
-            if (math.distance (translation.Value, Vector3.zero) >= 10) {
+        Entities.ForEach ((ref Translation translation, ref BoidComponent boid, ref LocalToWorld localToWorld) => {
+            if (math.distance (translation.Value, float3.zero) >= 10) {
                 boid.returning = true;
-                boid.velocity = math.normalize (float3.zero - translation.Value);
             } else {
                 boid.returning = false;
             }
-            translation.Value += boid.velocity * Time.deltaTime * boid.speed;
+            translation.Value += localToWorld.Forward * Time.deltaTime * boid.speed;
             
 
         });

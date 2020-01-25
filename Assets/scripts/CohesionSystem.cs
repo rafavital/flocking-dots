@@ -11,8 +11,6 @@ public class CohesionSystem : ComponentSystem
     {
         Entities.ForEach ((ref Translation boidTrans, ref Rotation boidRot, ref BoidComponent boidComponent) => 
         {
-            if (boidComponent.returning) return;
-
             float3 boidPos = boidTrans.Value;
             float coheDis = boidComponent.cohesionDistance;
             float avoidDis = boidComponent.avoidanceDistance;
@@ -24,43 +22,39 @@ public class CohesionSystem : ComponentSystem
             float avgSpeed = 0.01f;
 
             int neighbourCount = 0;
+            if (boidComponent.returning) {
+                    boidRot.Value = Quaternion.Slerp (boidRot.Value, Quaternion.LookRotation (float3.zero - boidPos), Time.deltaTime * boidComponent.rotationSpeed);    
+            } 
+            else {
 
-            Entities.WithAll <BoidComponent> ().ForEach ((ref Translation neighbourTranslation, ref BoidComponent neighbourBoid) => {
-                float distance = math.distance (boidPos, neighbourTranslation.Value);
-                if (distance <= coheDis) {
-                    if (distance <= 0.1f) return;
-                    neighbourCount++;
-                    cohesionDir += neighbourTranslation.Value;
-                    avgForward += neighbourTranslation.Value;
+                Entities.WithAll <BoidComponent> ().ForEach ((ref Translation neighbourTranslation, ref BoidComponent neighbourBoid, ref LocalToWorld neighLocalToWorld) => {
+                    float neighDistance = math.distance (boidPos, neighbourTranslation.Value);
+                    if (neighDistance <= coheDis) {
+                        neighbourCount++;
+                        cohesionDir += neighbourTranslation.Value;
+                        avgForward += neighLocalToWorld.Forward;
 
-                    Debug.DrawLine (boidPos, neighbourTranslation.Value);
+                        Debug.DrawLine (boidPos, neighbourTranslation.Value);
 
-                    if (distance <= avoidDis) {
-                        avoidDir += boidPos - neighbourTranslation.Value;
+                        if (neighDistance <= avoidDis) {
+                            avoidDir += boidPos - neighbourTranslation.Value;
+                        }
+
+                        avgSpeed += neighbourBoid.speed;
                     }
+                });
+                boidComponent.neighbourCount = neighbourCount;
+                if (neighbourCount > 0) {
 
-                    avgSpeed += neighbourBoid.speed;
+                    cohesionDir /= neighbourCount;
+                    avgForward /= neighbourCount;
+                    
+                    boidComponent.speed = avgSpeed / neighbourCount; 
+                    boidComponent.speed = math.clamp (boidComponent.speed, 0, 2.5f);
+                    float3 stirDir = (cohesionDir + avoidDir + avgForward) - boidPos;
+                    
+                    boidRot.Value = Quaternion.Slerp (boidRot.Value, Quaternion.LookRotation (stirDir), Time.deltaTime * boidComponent.rotationSpeed);
                 }
-            });
-            boidComponent.neighbourCount = neighbourCount;
-            if (neighbourCount > 0) {
-
-                cohesionDir /= neighbourCount;
-                avgForward /= neighbourCount;
-                avoidDir /= neighbourCount;
-                
-                boidComponent.speed = avgSpeed / neighbourCount; 
-                boidComponent.speed = math.clamp (boidComponent.speed, 0, 1);
-                float3 moveDir = math.normalize(cohesionDir + avoidDir + avgForward - boidPos) ;
-                boidComponent.stirDir = cohesionDir;
-
-                Debug.DrawRay (boidPos, cohesionDir, Color.blue);
-                Debug.DrawRay (boidPos, avoidDir, Color.red);
-                Debug.DrawRay (boidPos, moveDir, Color.green);
-
-                boidComponent.velocity = moveDir;
-                if (UnityEngine.Random.Range (0, 5) <= 1)
-                    boidRot.Value = Quaternion.Slerp (boidRot.Value, Quaternion.LookRotation (moveDir), Time.deltaTime * boidComponent.rotationSpeed);
 
             }
         });

@@ -60,13 +60,6 @@ public class FlockManager : MonoBehaviour
                     )
                 }
             );
-            entityManager.SetComponentData (entity, 
-                new Rotation {
-                    Value = new quaternion (
-                        0,0,0,0
-                    )
-                }
-            );
             entityManager.SetSharedComponentData (entity, new RenderMesh {
                 mesh = fishMesh,
                 material = fishMat
