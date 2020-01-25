@@ -23,7 +23,6 @@ public class FlockManager : MonoBehaviour
     [SerializeField] private float boidRotSpeed;
     [SerializeField] private float coheDis;
     [SerializeField] private float avoidDis;
-    [SerializeField] private float neighbourCount;
     
     void Start()
     {
@@ -32,6 +31,7 @@ public class FlockManager : MonoBehaviour
         EntityArchetype entityArchetype = entityManager.CreateArchetype (
             typeof (BoidComponent),
             typeof (Translation),
+            typeof (Rotation),
             typeof (RenderMesh),
             typeof (LocalToWorld)
         );
@@ -45,7 +45,7 @@ public class FlockManager : MonoBehaviour
                        rotationSpeed = boidRotSpeed, 
                        cohesionDistance = coheDis, 
                        avoidanceDistance = avoidDis, 
-                       neighbourCount = neighbourCount, 
+                       neighbourCount = 0, 
                        returning = false, 
                        velocity = new float3 (1,0,0), 
                        stirDir = new float3 (0,0,0) 
@@ -57,6 +57,13 @@ public class FlockManager : MonoBehaviour
                         UnityEngine.Random.Range (-boundSize, boundSize),
                         UnityEngine.Random.Range (-boundSize, boundSize),
                         UnityEngine.Random.Range (-boundSize, boundSize)
+                    )
+                }
+            );
+            entityManager.SetComponentData (entity, 
+                new Rotation {
+                    Value = new quaternion (
+                        0,0,0,0
                     )
                 }
             );
