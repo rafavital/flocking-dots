@@ -7,11 +7,12 @@ using Unity.Mathematics;
 public struct BoidComponent : IComponentData
 {
     public float speed;
+    public float maxSpeed;
     public float rotationSpeed;
     public float cohesionDistance;
     public float avoidanceDistance;
-    public float neighbourCount;
     public bool returning;
-    public float3 velocity;
-    public float3 stirDir;
+    public float3 cohesionDir;
+    public float3 avoidDir;
+    public float3 allignDir;
 }

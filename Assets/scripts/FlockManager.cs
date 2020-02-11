@@ -19,11 +19,12 @@ public class FlockManager : MonoBehaviour
     [SerializeField] private Mesh fishMesh;
     [SerializeField] private Material fishMat;
     [Space] [Header ("Boid Properties")]
-    [SerializeField] private float boidSpeed;
-    [SerializeField] private float boidRotSpeed;
-    [SerializeField] private float coheDis;
-    [SerializeField] private float avoidDis;
-    
+    [SerializeField] private float boidSpeed = 1f;
+    [SerializeField] private float boidMaxSpeed = 5f;
+    [SerializeField] private float boidRotSpeed = 0.5f;
+    [SerializeField] private float coheDis = 3f;
+    [SerializeField] private float avoidDis = 1.5f;
+
     void Start()
     {
         entityManager = World.Active.EntityManager;
@@ -42,13 +43,11 @@ public class FlockManager : MonoBehaviour
             entityManager.SetComponentData (entity, 
                 new BoidComponent {
                        speed = boidSpeed,
+                       maxSpeed = boidMaxSpeed,
                        rotationSpeed = boidRotSpeed, 
                        cohesionDistance = coheDis, 
                        avoidanceDistance = avoidDis, 
-                       neighbourCount = 0, 
                        returning = false, 
-                       velocity = new float3 (1,0,0), 
-                       stirDir = new float3 (0,0,0) 
                     }
                 );
             entityManager.SetComponentData (entity, 

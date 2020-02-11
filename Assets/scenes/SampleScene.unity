@@ -149,15 +149,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a09fef3c0288a108300e87b129bb19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfEntities: 250
+  numberOfEntities: 100
   boundSize: 25
   fishMesh: {fileID: -5495902117074765545, guid: af84656d9ec102a9caf598e92c886ed8,
     type: 3}
   fishMat: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  boidSpeed: 1000
+  boidSpeed: 1
+  boidMaxSpeed: 5
   boidRotSpeed: 0.5
-  coheDis: 10
-  avoidDis: 2
+  coheDis: 3
+  avoidDis: 1.5
 --- !u!4 &125982765
 Transform:
   m_ObjectHideFlags: 0
